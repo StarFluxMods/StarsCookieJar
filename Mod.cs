@@ -1,21 +1,21 @@
-using KitchenLib;
-using KitchenLib.Logging;
-using KitchenLib.Logging.Exceptions;
-using KitchenMods;
 using System.Linq;
+using KitchenLib;
+using KitchenMods;
 using System.Reflection;
+using KitchenLib.Interfaces;
+using KitchenLib.Logging.Exceptions;
 using UnityEngine;
 using KitchenLogger = KitchenLib.Logging.KitchenLogger;
 
 namespace StarsCookieJar
 {
-    public class Mod : BaseMod, IModSystem
+    public class Mod : BaseMod, IModSystem, IAutoRegisterAll
     {
         public const string MOD_GUID = "com.starfluxgames.starscookiejar";
         public const string MOD_NAME = "Star's Cookie Jar";
         public const string MOD_VERSION = "0.1.0";
         public const string MOD_AUTHOR = "StarFluxGames";
-        public const string MOD_GAMEVERSION = ">=1.1.9";
+        public const string MOD_GAMEVERSION = ">=1.2.1";
 
         internal static AssetBundle Bundle;
         internal static KitchenLogger Logger;
