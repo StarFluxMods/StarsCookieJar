@@ -67,7 +67,12 @@ namespace StarsCookieJar.Systems
                     }
                 }
             }
-            
+
+            if (PotentialDecorations.Count == 0)
+            {
+                return;
+            }
+
             int tile = 0;
             List<Vector3> postTiles = GetPostTiles();
             for (int i = 0; i < SpawnCount; i++)

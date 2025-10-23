@@ -13,7 +13,7 @@ namespace StarsCookieJar
     {
         public const string MOD_GUID = "com.starfluxgames.starscookiejar";
         public const string MOD_NAME = "Star's Cookie Jar";
-        public const string MOD_VERSION = "0.1.0";
+        public const string MOD_VERSION = "0.1.1";
         public const string MOD_AUTHOR = "StarFluxGames";
         public const string MOD_GAMEVERSION = ">=1.2.1";
 
