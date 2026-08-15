@@ -6,62 +6,74 @@ using Kitchen.Layouts;
 using Kitchen.Layouts.Features;
 using KitchenLib.Utils;
 using StarsCookieJar.API;
+using UnityEngine;
 
 namespace StarsCookieJar.Patches
 {
+    /*
+     * This patch is designed to allow custom LayoutPrefabSets to be used when generating
+     * The layout will need a `TypeMarker` node to identify it, and will need a `LayoutPrefabSet` registerd with `CookieJarRegistry.RegisterCustomPrefabSet()`
+     */
     [HarmonyPatch(typeof(LayoutView), "UpdateData")]
     public class LayoutViewPatch
     {
+        private static Dictionary<FeatureType, LayoutPrefabSet> PrefabSets = new Dictionary<FeatureType, LayoutPrefabSet>();
+        
         private static FieldInfo _Prefabs = ReflectionUtils.GetField<LayoutView>("Prefabs");
         static bool Prefix(LayoutView __instance, LayoutView.InitialViewData view_data)
         {
-            if (__instance.IsInitialised) return true;
+            if (__instance.IsInitialised) // If the layout has already been initialised, skip, we're too late anyway 
+            {
+                return true;
+            }
             
-            LayoutPrefabSet prefab_override = null;
+            // Check the layout in question for any registered markers.
+            LayoutPrefabSet prefabSetOverride = null;
+            Feature prefabSetMarker = null;
             foreach (Feature feature in view_data.Floorplan.Features)
             {
-                if (CookieJarRegistry.PrefabOverrides.TryGetValue(feature.Type, out prefab_override))
+                if (CookieJarRegistry.PrefabOverrides.TryGetValue(feature.Type, out prefabSetOverride))
                 {
+                    prefabSetMarker = feature;
                     break;
                 }
             }
-
-            if (prefab_override == null)
+            
+            // If a marker was found, check if there was an override set attached to it, otherwise fail.
+            if (prefabSetOverride == null)
             {
                 return true;
             }
 
-            __instance.IsInitialised = true;
-            __instance.Builder = new Kitchen.LayoutBuilder(view_data.Floorplan, (LayoutPrefabSet)_Prefabs.GetValue(__instance), __instance.transform);
-            
-            Dictionary<string, object> CachedVariables = new Dictionary<string, object>();
-            
-            foreach (FieldInfo field in typeof(LayoutPrefabSet).GetFields())
+            // Create a cache set not to affect other settings, and apply the override prefabs to it.
+            if (!PrefabSets.ContainsKey(prefabSetMarker.Type))
             {
-                var original = field.GetValue(__instance.Builder.Prefabs);
-                var modified = field.GetValue(prefab_override);
+                LayoutPrefabSet newPrefabSet = ScriptableObject.CreateInstance<LayoutPrefabSet>();
+                LayoutPrefabSet originalPrefabSet = (LayoutPrefabSet)_Prefabs.GetValue(__instance);
 
-                if (modified != null && original != modified)
+                foreach (FieldInfo variable in typeof(LayoutPrefabSet).GetFields())
                 {
-                    if (CachedVariables.TryAdd(field.Name, original))
-                    {
-                        field.SetValue(__instance.Builder.Prefabs, modified);
-                    }
+                    variable.SetValue(newPrefabSet, variable.GetValue(originalPrefabSet));
+                    
+                    var modifiedValue =  variable.GetValue(prefabSetOverride);
+                    if (modifiedValue != null) 
+                        variable.SetValue(newPrefabSet, modifiedValue);
                 }
+                
+                PrefabSets.Add(prefabSetMarker.Type, newPrefabSet);
             }
 
+            // Set initialised to avoid skipping 
+            __instance.IsInitialised = true;
+            // Setup the builder with the newly cached prefab set
+            __instance.Builder = new LayoutBuilder(view_data.Floorplan, PrefabSets[prefabSetMarker.Type], __instance.transform);
+
+            // Generate the map
             LayoutMapGenerator.GenerateFor(view_data.Floorplan, true);
             __instance.Builder.Build();
             __instance.UpdateNavmesh();
-            
-            foreach (FieldInfo field in typeof(LayoutPrefabSet).GetFields())
-            {
-                if (CachedVariables.TryGetValue(field.Name, out object value))
-                {
-                    field.SetValue(__instance.Builder.Prefabs, value);
-                }
-            }
-            
+
+            // Skip original method as we've done what we needed.
             return false;
         }
     }
