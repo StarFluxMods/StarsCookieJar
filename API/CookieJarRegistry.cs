@@ -8,14 +8,16 @@ using UnityEngine;
 
 namespace StarsCookieJar.API
 {
+    /*
+     * The centeral registration area for this mod's functionality
+     */
     public class CookieJarRegistry
     {
-        internal static Dictionary<int, List<Appliance>> DishLockedDecorations = new Dictionary<int, List<Appliance>>();
-        internal static Dictionary<int, List<Decor>> DishLockedDecor = new Dictionary<int, List<Decor>>();
-        internal static Dictionary<Appliance, Appliance> ApplianceSpecificLetters = new Dictionary<Appliance, Appliance>();
-        internal static List<int> SpecialAppliances = new List<int>();
-        internal static Dictionary<FeatureType, LayoutPrefabSet> PrefabOverrides = new Dictionary<FeatureType, LayoutPrefabSet>();
+        #region Dish Locked Decorations
         
+        internal static Dictionary<int, List<Appliance>> DishLockedDecorations = new Dictionary<int, List<Appliance>>();
+        internal static List<int> SpecialAppliances = new List<int>();
+
         public static void RegisterDishLockedDecorations(Dish dish, Appliance appliance)
         {
             if (!DishLockedDecorations.ContainsKey(dish.ID))
@@ -28,6 +30,12 @@ namespace StarsCookieJar.API
                 SpecialAppliances.Add(appliance.ID);
             }
         }
+        
+        #endregion
+
+        #region Dish Locked Decor
+
+        internal static Dictionary<int, List<Decor>> DishLockedDecor = new Dictionary<int, List<Decor>>();
 
         public static void RegisterDishLockedDecor(Dish dish, Decor decor)
         {
@@ -38,6 +46,12 @@ namespace StarsCookieJar.API
             DishLockedDecor[dish.ID].Add(decor);
         }
         
+        #endregion
+
+        #region Appliance Specific Letters
+
+        internal static Dictionary<Appliance, Appliance> ApplianceSpecificLetters = new Dictionary<Appliance, Appliance>();
+
         public static void RegisterApplianceSpecificLetters(Appliance appliance, Appliance letter)
         {
             if (!ApplianceSpecificLetters.ContainsKey(appliance))
@@ -55,7 +69,13 @@ namespace StarsCookieJar.API
                 Mod.Logger.LogWarning($"Failed to register letter {letter.name} for {appliance.name}, a letter is already set!");
             }
         }
+        
+        #endregion
 
+        #region LayoutPrefabSet Overrides
+        
+        internal static Dictionary<FeatureType, LayoutPrefabSet> PrefabOverrides = new Dictionary<FeatureType, LayoutPrefabSet>();
+        
         public static void RegisterCustomPrefabSet(FeatureType TypeMarker, LayoutPrefabSet PrefabSet)
         {
             if (!PrefabOverrides.ContainsKey(TypeMarker))
@@ -67,7 +87,7 @@ namespace StarsCookieJar.API
                 Mod.Logger.LogWarning($"Failed to register FeatureType Override {TypeMarker}, an override is already set!");
             }
         }
-
+        
         public static void RegisterCustomPrefabSet(FeatureType TypeMarker
             ,GameObject WallPrefab = null
             ,GameObject ShortWallPrefab = null
@@ -100,33 +120,69 @@ namespace StarsCookieJar.API
                 return;
             }
 
-            LayoutPrefabSet PrefabSet = ScriptableObject.CreateInstance<LayoutPrefabSet>();
+            LayoutPrefabSet prefabSet = ScriptableObject.CreateInstance<LayoutPrefabSet>();
             
-            PrefabSet.WallPrefab = WallPrefab;
-            PrefabSet.ShortWallPrefab = ShortWallPrefab;
-            PrefabSet.HatchPrefab = HatchPrefab;
-            PrefabSet.FloorPrefab = FloorPrefab;
-            PrefabSet.KitchenFloorPrefab = KitchenFloorPrefab;
-            PrefabSet.OutsideFloorPrefab = OutsideFloorPrefab;
-            PrefabSet.DoorPrefab = DoorPrefab;
-            PrefabSet.DoorPrefabReversed = DoorPrefabReversed;
-            PrefabSet.ExternalDoorPrefab = ExternalDoorPrefab;
-            PrefabSet.WindowPrefab = WindowPrefab;
-            PrefabSet.KitchenWindowPrefab = KitchenWindowPrefab;
-            PrefabSet.LegalDoorPrefab = LegalDoorPrefab;
-            PrefabSet.OfficeDoorPrefab = OfficeDoorPrefab;
-            PrefabSet.TrophyDoorPrefab = TrophyDoorPrefab;
-            PrefabSet.EmployeesOnlyDoorPrefab = EmployeesOnlyDoorPrefab;
-            PrefabSet.LightDoorPrefab = LightDoorPrefab;
-            PrefabSet.MissingDoorPrefab = MissingDoorPrefab;
-            PrefabSet.FencePrefab = FencePrefab;
-            PrefabSet.DefaultWall = DefaultWall;
-            PrefabSet.DefaultFloor = DefaultFloor;
-            PrefabSet.KitchenFloor = KitchenFloor;
-            PrefabSet.Materials = Materials;
+            prefabSet.WallPrefab = WallPrefab;
+            prefabSet.ShortWallPrefab = ShortWallPrefab;
+            prefabSet.HatchPrefab = HatchPrefab;
+            prefabSet.FloorPrefab = FloorPrefab;
+            prefabSet.KitchenFloorPrefab = KitchenFloorPrefab;
+            prefabSet.OutsideFloorPrefab = OutsideFloorPrefab;
+            prefabSet.DoorPrefab = DoorPrefab;
+            prefabSet.DoorPrefabReversed = DoorPrefabReversed;
+            prefabSet.ExternalDoorPrefab = ExternalDoorPrefab;
+            prefabSet.WindowPrefab = WindowPrefab;
+            prefabSet.KitchenWindowPrefab = KitchenWindowPrefab;
+            prefabSet.LegalDoorPrefab = LegalDoorPrefab;
+            prefabSet.OfficeDoorPrefab = OfficeDoorPrefab;
+            prefabSet.TrophyDoorPrefab = TrophyDoorPrefab;
+            prefabSet.EmployeesOnlyDoorPrefab = EmployeesOnlyDoorPrefab;
+            prefabSet.LightDoorPrefab = LightDoorPrefab;
+            prefabSet.MissingDoorPrefab = MissingDoorPrefab;
+            prefabSet.FencePrefab = FencePrefab;
+            prefabSet.DefaultWall = DefaultWall;
+            prefabSet.DefaultFloor = DefaultFloor;
+            prefabSet.KitchenFloor = KitchenFloor;
+            prefabSet.Materials = Materials;
 
-            RegisterCustomPrefabSet(TypeMarker, PrefabSet);
+            RegisterCustomPrefabSet(TypeMarker, prefabSet);
         }
+        
+        #endregion
+
+        #region Custom Settings / Layouts
+
+        internal static List<RestaurantSetting> _standaloneSettings = new List<RestaurantSetting>();
+        internal static Dictionary<int, List<int>> _settingLayoutPairs =  new Dictionary<int, List<int>>();
+        
+        public static bool RegisterCustomSetting(RestaurantSetting setting)
+        {
+            if (_standaloneSettings.Contains(setting)) return false;
+            _standaloneSettings.Add(setting);
+            return true;
+        }
+
+        public static bool RegisterLayoutToSetting(RestaurantSetting setting, LayoutProfile layout, bool addForcedLayoutIntoPool = false)
+        {
+            if (!_settingLayoutPairs.ContainsKey(setting.ID))
+            {
+                _settingLayoutPairs.Add(setting.ID, new List<int>());
+            }
+            
+            if (_settingLayoutPairs[setting.ID].Contains(layout.ID))  return false;
+            _settingLayoutPairs[setting.ID].Add(layout.ID);
+
+            if (addForcedLayoutIntoPool && setting.ForceLayout != null)
+            {
+                _settingLayoutPairs[setting.ID].Add(setting.ForceLayout.ID);
+                setting.ForceLayout = null;
+            }
+
+            return true;
+        }
+
+        #endregion
+        
     }
     
 }
