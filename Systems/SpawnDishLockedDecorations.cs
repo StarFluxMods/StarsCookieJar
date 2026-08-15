@@ -12,6 +12,9 @@ using UnityEngine;
 
 namespace StarsCookieJar.Systems
 {
+    /*
+     * This class is designed to spawn specialty `Appliance`s on decoration day, based on active dishes
+     */
     [UpdateInGroup(typeof(EndOfDayProgressionGroup))]
     [UpdateAfter(typeof(CreateShopRequests))]
     [UpdateAfter(typeof(HandleNewShop))]

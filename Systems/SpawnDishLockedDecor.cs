@@ -8,6 +8,9 @@ using Unity.Entities;
 
 namespace StarsCookieJar.Systems
 {
+    /*
+     * This class is designed to spawn specialty `Decor` on decoration day, based on active dishes
+     */
     public class SpawnDishLockedDecor : StartOfDaySystem, IModSystem
     {
         private EntityQuery _CurrentMenuItems;
